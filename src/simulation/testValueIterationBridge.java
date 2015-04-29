@@ -20,5 +20,6 @@ public class testValueIterationBridge {
             }
         });
     }
+    // mettre le bruit a 0
     
 }

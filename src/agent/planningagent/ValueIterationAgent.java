@@ -44,13 +44,13 @@ public class ValueIterationAgent extends PlanningValueAgent{
 	//*** VOTRE CODE
         HashMapUtil v2 = (HashMapUtil) this.v.clone();
 	for(Etat s : mdp.getEtatsAccessibles()){
-            double max = 0.0;
+            double max = Integer.MIN_VALUE;
             for(Action a : mdp.getActionsPossibles(s)){
                 double somme = 0.0;
                 try {
                     Map<Etat, Double> m = mdp.getEtatTransitionProba(s, a);
                     for(Etat e : m.keySet()){
-                        somme += m.get(e) * (mdp.getRecompense(s, a, e) + gamma * v.get(e));
+                        somme += m.get(e) * (mdp.getRecompense(s, a, e) + gamma * v2.get(e));
                     }
                 } catch (Exception ex) {
                     System.out.println("Erreur : "+ex.getMessage());
@@ -63,7 +63,7 @@ public class ValueIterationAgent extends PlanningValueAgent{
         }
 		
         // mise a jour vmax et vmin pour affichage
-        double max = 0;
+        double max = Integer.MIN_VALUE;
         double min = Integer.MAX_VALUE;
         for(Double val : this.v.values()){
             if(val < min){
@@ -74,7 +74,17 @@ public class ValueIterationAgent extends PlanningValueAgent{
             }
         }
         super.vmax = max;
-        super.vmin = min;            	
+        super.vmin = min;    
+        
+        // MAJ delta
+        double _max = Integer.MIN_VALUE;
+        for (Etat e : this.v.keySet()) {
+            if (Math.abs(this.v.get(e) - v2.get(e)) > _max){
+                _max = Math.abs(this.v.get(e) - v2.get(e));
+            }
+        }
+        super.delta = _max;
+
         //******************* a laisser a la fin de la methode
         this.notifyObs();
     }
@@ -110,7 +120,7 @@ public class ValueIterationAgent extends PlanningValueAgent{
     public ArrayList<Action> getPolitique(Etat _e) {
 	ArrayList<Action> listAction = new ArrayList<>();
 	//*** VOTRE CODE
-        double max = 0.0;
+        double max = Integer.MIN_VALUE;
         for(Action a : mdp.getActionsPossibles(_e)) {
             double somme = 0.0;
             try {
