@@ -20,10 +20,5 @@ public class testValueIterationDiscountGrid {
             }
         });
     }
-    // 1 : gamma = 0.9 // bruit = 0.2 // autre rec = -4
-    // 2 : gamma = 0.9 // bruit = 0.0 // autre rec = 0.0
-    // 3 : gamma = 0.35 // bruit = 0.2 // autre rec = 0.0
-    // 4
-    // 5 : gamma = 0.9 // bruit = 0.2 // autre rec > 1
     
 }

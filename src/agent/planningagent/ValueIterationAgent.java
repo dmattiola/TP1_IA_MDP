@@ -44,7 +44,7 @@ public class ValueIterationAgent extends PlanningValueAgent{
 	//*** VOTRE CODE
         HashMapUtil v2 = (HashMapUtil) this.v.clone();
 	for(Etat s : mdp.getEtatsAccessibles()){
-            double max = Integer.MIN_VALUE;
+            double max = Double.MIN_VALUE;
             for(Action a : mdp.getActionsPossibles(s)){
                 double somme = 0.0;
                 try {
@@ -55,35 +55,29 @@ public class ValueIterationAgent extends PlanningValueAgent{
                 } catch (Exception ex) {
                     System.out.println("Erreur : "+ex.getMessage());
                 }
-                if (somme > max){
-                    max = somme;
-                }
+                max = Math.max(max,somme);
             }
             this.v.put(s, max);
         }
-		
-        // mise a jour vmax et vmin pour affichage
-        double max = Integer.MIN_VALUE;
-        double min = Integer.MAX_VALUE;
-        for(Double val : this.v.values()){
-            if(val < min){
-                min = val;
-            }
-            if (val > max){
-                max = val;
-            }
-        }
-        super.vmax = max;
-        super.vmin = min;    
         
-        // MAJ delta
-        double _max = Integer.MIN_VALUE;
+	 // MAJ delta
+        double _max = 0.0;
         for (Etat e : this.v.keySet()) {
             if (Math.abs(this.v.get(e) - v2.get(e)) > _max){
                 _max = Math.abs(this.v.get(e) - v2.get(e));
             }
         }
         super.delta = _max;
+        
+        // mise a jour vmax et vmin pour affichage
+        double max = Double.MIN_VALUE;
+        double min = Double.MAX_VALUE;
+        for(double val : this.v.values()){
+            min = Math.min(min,val);
+            max = Math.max(max,val);
+        }
+        super.vmax = max;
+        super.vmin = min;    
 
         //******************* a laisser a la fin de la methode
         this.notifyObs();
@@ -120,13 +114,13 @@ public class ValueIterationAgent extends PlanningValueAgent{
     public ArrayList<Action> getPolitique(Etat _e) {
 	ArrayList<Action> listAction = new ArrayList<>();
 	//*** VOTRE CODE
-        double max = Integer.MIN_VALUE;
+        double max = Double.MIN_VALUE;
         for(Action a : mdp.getActionsPossibles(_e)) {
             double somme = 0.0;
             try {
                 Map<Etat, Double> m = mdp.getEtatTransitionProba(_e, a);
                 for(Etat e : m.keySet()) {
-                    somme += m.get(e) * (mdp.getRecompense(_e, a, e) + gamma * getValeur(e));
+                   somme += m.get(e) * (mdp.getRecompense(_e, a, e) + gamma * getValeur(e));
                 }
             } catch (Exception ex) {
                 System.out.println("Erreur : "+ex.getMessage());
@@ -151,6 +145,8 @@ public class ValueIterationAgent extends PlanningValueAgent{
         for (Etat e : mdp.getEtatsAccessibles()){
             this.v.put(e,0.0);
         }
+        super.vmax = Double.MIN_VALUE;
+        super.vmin = Double.MAX_VALUE; 
 	/*-----------------*/
 	this.notifyObs();
     }
